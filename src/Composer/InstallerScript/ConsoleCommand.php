@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-namespace Typo3Console\AutoSetup\Composer\InstallerScript;
+namespace Typo3Console\ComposerAutoSetup\Composer\InstallerScript;
 
 /*
  * This file is part of the TYPO3 project.

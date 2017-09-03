@@ -1,5 +1,5 @@
 {
-    "name": "typo3-console/auto-setup",
+    "name": "typo3-console/composer-auto-setup",
     "type": "library",
     "description" : "Automatically set up TYPO3 on 'composer install' using TYPO3 Console commands",
     "license": "GPL-2.0+",
@@ -16,7 +16,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Typo3Console\\AutoSetup\\": "src"
+            "Typo3Console\\ComposerAutoSetup\\": "src"
         }
     },
     "extra": {
