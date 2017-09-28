@@ -6,7 +6,7 @@
     "require": {
         "php": ">=7.0 <7.2",
         "helhum/typo3-composer-setup": "^0.3.1",
-        "helhum/typo3-console": "5.0@dev",
+        "helhum/typo3-console": "^5.0@dev",
         "typo3/cms-composer-installers": "^1.4.2",
         "typo3/cms-core": "^8.7"
     },
