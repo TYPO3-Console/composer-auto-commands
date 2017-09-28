@@ -22,10 +22,12 @@ namespace Typo3Console\ComposerAutoSetup\Composer\InstallerScript;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use Composer\Autoload\ClassLoader;
 use Composer\Script\Event as ScriptEvent;
+use Helhum\Typo3Console\Core\Kernel;
+use TYPO3\CMS\Core\Core\Bootstrap;
 use Typo3Console\ComposerAutoSetup\Composer\ConsoleIo;
 use Helhum\Typo3Console\Core\Booting\RunLevel;
-use Helhum\Typo3Console\Core\ConsoleBootstrap;
 use Helhum\Typo3Console\Install\CliSetupRequestHandler;
 use Helhum\Typo3Console\Mvc\Cli\CommandDispatcher;
 use Helhum\Typo3Console\Mvc\Cli\CommandManager;
@@ -80,7 +82,7 @@ class SetupTypo3 implements InstallerScript
         $io->writeError('<info>Setting up TYPO3</info>');
 
         $consoleIO = new ConsoleIo($event->getIO());
-        $this->ensureTypo3Booted($event);
+        $this->ensureTypo3Booted();
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $commandDispatcher = CommandDispatcher::createFromComposerRun($event);
         $setup = new CliSetupRequestHandler(
@@ -138,25 +140,14 @@ class SetupTypo3 implements InstallerScript
         // Since this code is executed in composer runtime,
         // we can safely assume that TYPO3 has not been bootstrapped
         // until this API has been initialized to return true
-        return ConsoleBootstrap::usesComposerClassLoading();
+        return Bootstrap::usesComposerClassLoading();
     }
 
-    /**
-     * @param ScriptEvent $event
-     * @return ConsoleBootstrap
-     */
-    private function ensureTypo3Booted(ScriptEvent $event)
+    private function ensureTypo3Booted()
     {
         if (!$this->hasTypo3Booted()) {
-            $_SERVER['argv'][0] = 'typo3';
-            $bootstrap = ConsoleBootstrap::create('Production');
-            $bootstrap->initialize(new \Composer\Autoload\ClassLoader());
-            /** @var RunLevel $runLevel */
-            $runLevel = $bootstrap->getEarlyInstance(RunLevel::class);
-            $runLevel->buildSequence(RunLevel::LEVEL_COMPILE)->invoke($bootstrap);
-        } else {
-            $bootstrap = ConsoleBootstrap::getInstance();
+            $kernel = new Kernel(new ClassLoader());
+            $kernel->initialize(RunLevel::LEVEL_COMPILE);
         }
-        return $bootstrap;
     }
 }
