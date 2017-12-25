@@ -30,16 +30,26 @@ use Typo3Console\ComposerAutoSetup\Composer\ConsoleIo;
 use Helhum\Typo3Console\Core\Booting\RunLevel;
 use Helhum\Typo3Console\Install\CliSetupRequestHandler;
 use Helhum\Typo3Console\Mvc\Cli\CommandDispatcher;
-use Helhum\Typo3Console\Mvc\Cli\CommandManager;
 use Helhum\Typo3Console\Mvc\Cli\ConsoleOutput;
 use Symfony\Component\Dotenv\Dotenv;
 use TYPO3\CMS\Composer\Plugin\Core\InstallerScript;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Reflection\ReflectionService;
 
 class SetupTypo3 implements InstallerScript
 {
+    private static $envVarNames = [
+        'TYPO3_INSTALL_DB_USER',
+        'TYPO3_INSTALL_DB_PASSWORD',
+        'TYPO3_INSTALL_DB_HOST',
+        'TYPO3_INSTALL_DB_PORT',
+        'TYPO3_INSTALL_DB_UNIX_SOCKET',
+        'TYPO3_INSTALL_DB_USE_EXISTING',
+        'TYPO3_INSTALL_DB_DBNAME',
+        'TYPO3_INSTALL_ADMIN_USER',
+        'TYPO3_INSTALL_ADMIN_PASSWORD',
+        'TYPO3_INSTALL_SITE_NAME',
+        'TYPO3_INSTALL_SITE_SETUP_TYPE',
+    ];
+
     /**
      * @var string
      */
@@ -83,14 +93,10 @@ class SetupTypo3 implements InstallerScript
 
         $consoleIO = new ConsoleIo($event->getIO());
         $this->ensureTypo3Booted();
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $commandDispatcher = CommandDispatcher::createFromComposerRun($event);
         $setup = new CliSetupRequestHandler(
-            $objectManager,
-            $objectManager->get(CommandManager::class),
-            $objectManager->get(ReflectionService::class),
-            $commandDispatcher,
-            new ConsoleOutput($consoleIO->getOutput(), $consoleIO->getInput())
+            new ConsoleOutput($consoleIO->getOutput(), $consoleIO->getInput()),
+            $commandDispatcher
         );
         $setup->setup($consoleIO->isInteractive(), $this->populateCommandArgumentsFromEnvironment());
         putenv('TYPO3_IS_SET_UP=1');
@@ -109,27 +115,16 @@ class SetupTypo3 implements InstallerScript
             $envValues = (new Dotenv())->parse(file_get_contents($envInstallFile), $envInstallFile);
         }
 
-        $arguments = [
-            'databaseUserName' => $envValues['TYPO3_INSTALL_DB_USER'] ?? getenv('TYPO3_INSTALL_DB_USER'),
-            'databaseUserPassword' => $envValues['TYPO3_INSTALL_DB_PASSWORD'] ?? getenv('TYPO3_INSTALL_DB_PASSWORD'),
-            'databaseHostName' => $envValues['TYPO3_INSTALL_DB_HOST'] ?? getenv('TYPO3_INSTALL_DB_HOST'),
-            'databasePort' => $envValues['TYPO3_INSTALL_DB_PORT'] ?? getenv('TYPO3_INSTALL_DB_PORT'),
-            'databaseSocket' => $envValues['TYPO3_INSTALL_DB_UNIX_SOCKET'] ?? getenv('TYPO3_INSTALL_DB_UNIX_SOCKET'),
-            'databaseName' => $envValues['TYPO3_INSTALL_DB_DBNAME'] ?? getenv('TYPO3_INSTALL_DB_DBNAME'),
-            'adminUserName' => $envValues['TYPO3_INSTALL_ADMIN_USER'] ?? getenv('TYPO3_INSTALL_ADMIN_USER'),
-            'adminPassword' => $envValues['TYPO3_INSTALL_ADMIN_PASSWORD'] ?? getenv('TYPO3_INSTALL_ADMIN_PASSWORD'),
-            'siteName' => $envValues['TYPO3_INSTALL_SITE_NAME'] ?? getenv('TYPO3_INSTALL_SITE_NAME'),
-            'siteSetupType' => $envValues['TYPO3_INSTALL_SITE_SETUP_TYPE'] ?? getenv('TYPO3_INSTALL_SITE_SETUP_TYPE'),
-        ];
-        $commandArguments = array_filter($arguments, function ($value) {
-            return $value !== false;
-        });
-        $useExistingDb = $envValues['TYPO3_INSTALL_DB_USE_EXISTING'] ?? getenv('TYPO3_INSTALL_DB_USE_EXISTING');
-        if ($useExistingDb !== false) {
-            $commandArguments['useExistingDatabase'] = (bool)$useExistingDb;
+        $arguments = [];
+        foreach (self::$envVarNames as $varName) {
+            if (getenv($varName) !== false) {
+                $arguments[$varName] = getenv($varName);
+            } elseif (isset($envValues[$varName])) {
+                $arguments[$varName] = $envValues[$varName];
+            }
         }
 
-        return $commandArguments;
+        return $arguments;
     }
 
     /**
