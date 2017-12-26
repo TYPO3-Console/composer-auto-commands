@@ -5,7 +5,7 @@
     "license": "GPL-2.0+",
     "require": {
         "php": ">=7.0 <7.3",
-        "helhum/typo3-composer-setup": ">=0.2.0 <=0.4",
+        "helhum/typo3-composer-setup": ">=0.2.0 <0.5",
         "helhum/typo3-console": "^5.0",
         "typo3/cms-composer-installers": "^1.4.2 || ^2.0"
     },
