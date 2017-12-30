@@ -141,7 +141,12 @@ class SetupTypo3 implements InstallerScript
     private function ensureTypo3Booted()
     {
         if (!$this->hasTypo3Booted()) {
-            $kernel = new Kernel(new ClassLoader());
+            if (file_exists($autoloadFile = __DIR__ . '/../../../../../autoload.php')) {
+                $classLoader = require $autoloadFile;
+            } else {
+                $classLoader = new ClassLoader();
+            }
+            $kernel = new Kernel($classLoader);
             $kernel->initialize(RunLevel::LEVEL_COMPILE);
         }
     }
