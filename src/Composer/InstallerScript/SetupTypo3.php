@@ -36,18 +36,18 @@ use TYPO3\CMS\Composer\Plugin\Core\InstallerScript;
 
 class SetupTypo3 implements InstallerScript
 {
-    private static $envVarNames = [
-        'TYPO3_INSTALL_DB_USER',
-        'TYPO3_INSTALL_DB_PASSWORD',
-        'TYPO3_INSTALL_DB_HOST',
-        'TYPO3_INSTALL_DB_PORT',
-        'TYPO3_INSTALL_DB_UNIX_SOCKET',
-        'TYPO3_INSTALL_DB_USE_EXISTING',
-        'TYPO3_INSTALL_DB_DBNAME',
-        'TYPO3_INSTALL_ADMIN_USER',
-        'TYPO3_INSTALL_ADMIN_PASSWORD',
-        'TYPO3_INSTALL_SITE_NAME',
-        'TYPO3_INSTALL_SITE_SETUP_TYPE',
+    private static $envVarArgumentMapping = [
+        'databaseUserName' => 'TYPO3_INSTALL_DB_USER',
+        'databaseUserPassword' => 'TYPO3_INSTALL_DB_PASSWORD',
+        'databaseHostName' => 'TYPO3_INSTALL_DB_HOST',
+        'databasePort' => 'TYPO3_INSTALL_DB_PORT',
+        'databaseSocket' => 'TYPO3_INSTALL_DB_UNIX_SOCKET',
+        'useExistingDatabase' => 'TYPO3_INSTALL_DB_USE_EXISTING',
+        'databaseName' => 'TYPO3_INSTALL_DB_DBNAME',
+        'adminUserName' => 'TYPO3_INSTALL_ADMIN_USER',
+        'adminPassword' => 'TYPO3_INSTALL_ADMIN_PASSWORD',
+        'siteName' => 'TYPO3_INSTALL_SITE_NAME',
+        'siteSetupType' => 'TYPO3_INSTALL_SITE_SETUP_TYPE',
     ];
 
     /**
@@ -108,19 +108,19 @@ class SetupTypo3 implements InstallerScript
     /**
      * @return array
      */
-    protected function populateCommandArgumentsFromEnvironment()
+    protected function populateCommandArgumentsFromEnvironment(): array
     {
+        $arguments = [];
         $envValues = [];
         if (class_exists(Dotenv::class) && file_exists($envInstallFile = getenv('TYPO3_PATH_COMPOSER_ROOT') . '/.env.install')) {
             $envValues = (new Dotenv())->parse(file_get_contents($envInstallFile), $envInstallFile);
         }
 
-        $arguments = [];
-        foreach (self::$envVarNames as $varName) {
-            if (getenv($varName) !== false) {
-                $arguments[$varName] = getenv($varName);
-            } elseif (isset($envValues[$varName])) {
-                $arguments[$varName] = $envValues[$varName];
+        foreach (self::$envVarArgumentMapping as $varName => $envName) {
+            if (getenv($envName) !== false) {
+                $arguments[$varName] = getenv($envName);
+            } elseif (isset($envValues[$envName])) {
+                $arguments[$varName] = $envValues[$envName];
             }
         }
 
