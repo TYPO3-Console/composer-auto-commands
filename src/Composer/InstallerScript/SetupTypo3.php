@@ -36,6 +36,11 @@ use TYPO3\CMS\Composer\Plugin\Core\InstallerScript;
 
 class SetupTypo3 implements InstallerScript
 {
+    /**
+     * @var bool
+     */
+    private $isDotEnvEnabled;
+
     private static $envVarArgumentMapping = [
         'databaseUserName' => 'TYPO3_INSTALL_DB_USER',
         'databaseUserPassword' => 'TYPO3_INSTALL_DB_PASSWORD',
@@ -55,9 +60,10 @@ class SetupTypo3 implements InstallerScript
      */
     private $installedFile;
 
-    public function __construct()
+    public function __construct(bool $isDotEnvEnabled = null)
     {
-        if (class_exists(Dotenv::class)) {
+        $this->isDotEnvEnabled = $isDotEnvEnabled ?? class_exists(Dotenv::class);
+        if ($this->isDotEnvEnabled) {
             $this->installedFile = getenv('TYPO3_PATH_COMPOSER_ROOT') . '/.env';
         } else {
             $this->installedFile = getenv('TYPO3_PATH_COMPOSER_ROOT') . '/.installed';
@@ -100,7 +106,12 @@ class SetupTypo3 implements InstallerScript
         );
         $setup->setup($consoleIO->isInteractive(), $this->populateCommandArgumentsFromEnvironment());
         putenv('TYPO3_IS_SET_UP=1');
-        file_put_contents($this->installedFile, '');
+
+        $installedFileContent = '';
+        if ($this->isDotEnvEnabled) {
+            $installedFileContent .= 'TYPO3_CONTEXT=Development' . chr(10);
+        }
+        file_put_contents($this->installedFile, $installedFileContent);
 
         return true;
     }
@@ -112,7 +123,7 @@ class SetupTypo3 implements InstallerScript
     {
         $arguments = [];
         $envValues = [];
-        if (class_exists(Dotenv::class) && file_exists($envInstallFile = getenv('TYPO3_PATH_COMPOSER_ROOT') . '/.env.install')) {
+        if ($this->isDotEnvEnabled && file_exists($envInstallFile = getenv('TYPO3_PATH_COMPOSER_ROOT') . '/.env.install')) {
             $envValues = (new Dotenv())->parse(file_get_contents($envInstallFile), $envInstallFile);
         }
 
@@ -130,7 +141,7 @@ class SetupTypo3 implements InstallerScript
     /**
      * @return bool
      */
-    private function hasTypo3Booted()
+    private function hasTypo3Booted(): bool
     {
         // Since this code is executed in composer runtime,
         // we can safely assume that TYPO3 has not been bootstrapped
