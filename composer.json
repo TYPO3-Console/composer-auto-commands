@@ -1,8 +1,8 @@
 {
     "name": "typo3-console/composer-auto-setup",
     "type": "library",
-    "description" : "Automatically set up TYPO3 on 'composer install' using TYPO3 Console commands",
-    "license": "GPL-2.0+",
+    "description" : "Automatically set up TYPO3 Extensions on 'composer install'",
+    "license": "GPL-2.0-or-later",
     "require": {
         "php": ">=7.0 <7.3",
         "helhum/typo3-composer-setup": "^0.5.1",
