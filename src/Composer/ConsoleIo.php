@@ -1,5 +1,5 @@
 <?php
-namespace Typo3Console\ComposerAutoSetup\Composer;
+namespace Typo3Console\ComposerAutoCommands\Composer;
 
 /***************************************************************
  *  Copyright notice

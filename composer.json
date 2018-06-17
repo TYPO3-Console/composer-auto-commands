@@ -1,21 +1,16 @@
 {
-    "name": "typo3-console/composer-auto-setup",
+    "name": "typo3-console/composer-auto-commands",
     "type": "library",
-    "description" : "Automatically set up TYPO3 Extensions on 'composer install'",
+    "description" : "Execute TYPO3 Console commands on 'composer install'",
     "license": "GPL-2.0-or-later",
     "require": {
         "php": ">=7.0 <7.3",
-        "helhum/typo3-composer-setup": "^0.5.1",
         "helhum/typo3-console": "^5.0",
         "typo3/cms-composer-installers": "^1.4.2 || ^2.0"
     },
-    "suggest": {
-        "helhum/dotenv-connector": "Recommended for easily setting environment specific configuration in dev context",
-        "typo3-console/php-server-command": "Recommended for easy testing of your distribution in dev context without the needing a dedicated webserver"
-    },
     "autoload": {
         "psr-4": {
-            "Typo3Console\\ComposerAutoSetup\\": "src"
+            "Typo3Console\\ComposerAutoCommands\\": "src"
         }
     },
     "extra": {

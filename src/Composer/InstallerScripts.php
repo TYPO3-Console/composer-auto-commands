@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-namespace Typo3Console\ComposerAutoSetup\Composer;
+namespace Typo3Console\ComposerAutoCommands\Composer;
 
 /***************************************************************
  *  Copyright notice
@@ -23,7 +23,7 @@ namespace Typo3Console\ComposerAutoSetup\Composer;
  ***************************************************************/
 
 use Composer\Script\Event;
-use Typo3Console\ComposerAutoSetup\Composer\InstallerScript\ConsoleCommand;
+use Typo3Console\ComposerAutoCommands\Composer\InstallerScript\ConsoleCommand;
 use TYPO3\CMS\Composer\Plugin\Core\InstallerScriptsRegistration;
 use TYPO3\CMS\Composer\Plugin\Core\ScriptDispatcher;
 
