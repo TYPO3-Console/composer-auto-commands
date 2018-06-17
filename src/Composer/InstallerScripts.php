@@ -31,34 +31,21 @@ class InstallerScripts implements InstallerScriptsRegistration
 {
     public static function register(Event $event, ScriptDispatcher $scriptDispatcher)
     {
-        $isSetupRunClosure = function () {
-            return !getenv('TYPO3_IS_SET_UP');
-        };
         $scriptDispatcher->addInstallerScript(
-            new ConsoleCommand(
-                'install:generatepackagestates',
-                [],
-                '',
-                $isSetupRunClosure
-            ),
+            new ConsoleCommand('install:generatepackagestates'),
             65
         );
         $scriptDispatcher->addInstallerScript(
-            new ConsoleCommand(
-                'install:fixfolderstructure',
-                [],
-                '',
-                $isSetupRunClosure
-            ),
+            new ConsoleCommand('install:fixfolderstructure'),
             65
         );
-        if ($event->isDevMode()) {
+        $typo3IsSetUp = getenv('TYPO3_IS_SET_UP') || file_exists(getenv('TYPO3_PATH_ROOT') . '/typo3conf/LocalConfiguration.php');
+        if ($typo3IsSetUp && $event->isDevMode()) {
             $scriptDispatcher->addInstallerScript(
                 new ConsoleCommand(
                     'install:extensionsetupifpossible',
                     [],
-                    'Setting up TYPO3 environment and extensions.',
-                    $isSetupRunClosure
+                    'Setting up TYPO3 environment and extensions.'
                 ),
                 61
             );
