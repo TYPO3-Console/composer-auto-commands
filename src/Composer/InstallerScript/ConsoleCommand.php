@@ -17,6 +17,7 @@ namespace Typo3Console\ComposerAutoCommands\Composer\InstallerScript;
 
 use Composer\Script\Event;
 use Helhum\Typo3Console\Mvc\Cli\CommandDispatcher;
+use Helhum\Typo3Console\Mvc\Cli\FailedSubProcessCommandException;
 use TYPO3\CMS\Composer\Plugin\Core\InstallerScript;
 
 class ConsoleCommand implements InstallerScript
@@ -66,8 +67,40 @@ class ConsoleCommand implements InstallerScript
         }
 
         $commandDispatcher = CommandDispatcher::createFromComposerRun($event);
-        $output = $commandDispatcher->executeCommand($this->command, $this->arguments);
-        $io->writeError($output, true, $io::VERBOSE);
+        try {
+            $output = $commandDispatcher->executeCommand($this->command, $this->arguments);
+            $io->writeError($output, true, $io::VERBOSE);
+        } catch (FailedSubProcessCommandException $e) {
+            $io->writeError(sprintf('<error>Executing TYPO3 Console command "%s" returned with error code %d.</error>', $e->getCommand(), $e->getExitCode()));
+            $io->writeError(
+                sprintf(
+                    "Command line:\n%s\n",
+                    $e->getCommandLine()
+                ),
+                true,
+                $io::VERBOSE
+            );
+            if ($commandOutput = trim(strip_tags($e->getOutputMessage()))) {
+                $io->writeError(
+                    sprintf(
+                        "Command output:\n%s\n",
+                        $commandOutput
+                    ),
+                    true,
+                    $io::VERBOSE
+                );
+            }
+            if ($commandErrorOutput = trim(strip_tags($e->getErrorMessage()))) {
+                $io->writeError(
+                    sprintf(
+                        "Command error output:\n%s\n",
+                        $commandErrorOutput
+                    ),
+                    true,
+                    $io::VERBOSE
+                );
+            }
+        }
 
         return true;
     }
