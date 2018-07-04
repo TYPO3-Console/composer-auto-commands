@@ -33,11 +33,11 @@ class InstallerScripts implements InstallerScriptsRegistration
     {
         $scriptDispatcher->addInstallerScript(
             new ConsoleCommand('install:generatepackagestates'),
-            65
+            49
         );
         $scriptDispatcher->addInstallerScript(
             new ConsoleCommand('install:fixfolderstructure'),
-            65
+            48
         );
         $typo3IsSetUp = getenv('TYPO3_IS_SET_UP') || file_exists(getenv('TYPO3_PATH_ROOT') . '/typo3conf/LocalConfiguration.php');
         if ($typo3IsSetUp && $event->isDevMode()) {
@@ -47,7 +47,7 @@ class InstallerScripts implements InstallerScriptsRegistration
                     [],
                     'Setting up TYPO3 environment and extensions.'
                 ),
-                61
+                47
             );
         }
     }
