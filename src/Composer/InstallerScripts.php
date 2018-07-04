@@ -43,11 +43,19 @@ class InstallerScripts implements InstallerScriptsRegistration
         if ($typo3IsSetUp && $event->isDevMode()) {
             $scriptDispatcher->addInstallerScript(
                 new ConsoleCommand(
-                    'install:extensionsetupifpossible',
+                    'database:updateschema',
                     [],
                     'Setting up TYPO3 environment and extensions.'
                 ),
                 47
+            );
+            $scriptDispatcher->addInstallerScript(
+                new ConsoleCommand('cache:flush'),
+                46
+            );
+            $scriptDispatcher->addInstallerScript(
+                new ConsoleCommand('extension:setupactive'),
+                45
             );
         }
     }
