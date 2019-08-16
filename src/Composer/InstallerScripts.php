@@ -33,11 +33,11 @@ class InstallerScripts implements InstallerScriptsRegistration
     {
         $scriptDispatcher->addInstallerScript(
             new ConsoleCommand('install:generatepackagestates'),
-            49
+            20
         );
         $scriptDispatcher->addInstallerScript(
             new ConsoleCommand('install:fixfolderstructure'),
-            48
+            20
         );
         $typo3IsSetUp = getenv('TYPO3_IS_SET_UP') || file_exists(getenv('TYPO3_PATH_ROOT') . '/typo3conf/LocalConfiguration.php');
         if ($typo3IsSetUp && $event->isDevMode()) {
@@ -47,15 +47,15 @@ class InstallerScripts implements InstallerScriptsRegistration
                     [],
                     'Setting up TYPO3 environment and extensions.'
                 ),
-                47
+                20
             );
             $scriptDispatcher->addInstallerScript(
                 new ConsoleCommand('cache:flush'),
-                46
+                20
             );
             $scriptDispatcher->addInstallerScript(
                 new ConsoleCommand('extension:setupactive'),
-                45
+                20
             );
         }
     }
