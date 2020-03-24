@@ -4,13 +4,19 @@ This is a composer package that aims to simplify running [TYPO3 Console](https:/
 every time composer dumps autoload information, e.g. during a `composer install` run.
 
 The following TYPO3 Console commands are executed: 
-* `install:generatepackagesates`
+
+* `install:generatepackagestates`
 * `install:fixfolderstructure`
-* `install:extensionsetupifpossible`
 
-The last one is skipped for `--no-dev` installs and when TYPO3 appears to not be set up (`LocalConfiguration.php` file is missing).
+And in the case TYPO3 appears to be setup properly (`LocalConfiguration.php`
+file is not missing) and running composer in dev mode (without `--no-dev`) these
+commands are also executed:
 
-See the [command reference](https://github.com/TYPO3-Console/TYPO3-Console/blob/master/Documentation/CommandReference/Index.rst)
+* `database:updateschema`
+* `cache:flush`
+* `extension:setupactive`
+
+See the [command reference](https://docs.typo3.org/p/helhum/typo3-console/master/en-us/CommandReference/Index.html)
 for details on these commands.
 
 The benefits of using this package over just specifying the console commands in your `composer.json`
