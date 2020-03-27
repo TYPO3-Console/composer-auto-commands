@@ -16,9 +16,11 @@ namespace Typo3Console\ComposerAutoCommands\Composer\InstallerScript;
  */
 
 use Composer\Script\Event;
+use Helhum\Typo3Console\Error\ExceptionRenderer;
 use Helhum\Typo3Console\Mvc\Cli\CommandDispatcher;
 use Helhum\Typo3Console\Mvc\Cli\FailedSubProcessCommandException;
 use TYPO3\CMS\Composer\Plugin\Core\InstallerScript;
+use Typo3Console\ComposerAutoCommands\Composer\ConsoleIo;
 
 class ConsoleCommand implements InstallerScript
 {
@@ -42,18 +44,27 @@ class ConsoleCommand implements InstallerScript
      */
     private $shouldRun;
 
+    /**
+     * @var bool
+     */
+    private $allowFailure;
+
+    private static $verbosityHint = true;
+
     public function __construct(
         string $command,
         array $arguments = [],
         string $message = '',
-        callable $shouldRun = null
+        callable $shouldRun = null,
+        bool $allowFailure = true
     ) {
         $this->command = $command;
         $this->arguments = $arguments;
         $this->message = $message;
-        $this->shouldRun = $shouldRun ?: function () {
+        $this->shouldRun = $shouldRun ?? function () {
             return true;
         };
+        $this->allowFailure = $allowFailure;
     }
 
     public function run(Event $event): bool
@@ -61,7 +72,7 @@ class ConsoleCommand implements InstallerScript
         if (!($this->shouldRun)()) {
             return true;
         }
-        $io = $event->getIO();
+        $io = new ConsoleIo($event->getIO());
         if ($this->message) {
             $io->writeError(sprintf('<info>%s</info>', $this->message));
         }
@@ -71,34 +82,23 @@ class ConsoleCommand implements InstallerScript
             $output = $commandDispatcher->executeCommand($this->command, $this->arguments);
             $io->writeError($output, true, $io::VERBOSE);
         } catch (FailedSubProcessCommandException $e) {
-            $io->writeError(sprintf('<error>Executing TYPO3 Console command "%s" returned with error code %d.</error>', $e->getCommand(), $e->getExitCode()));
-            $io->writeError(
-                sprintf(
-                    "Command line:\n%s\n",
-                    $e->getCommandLine()
-                ),
-                true,
-                $io::VERBOSE
-            );
-            if ($commandOutput = trim(strip_tags($e->getOutputMessage()))) {
-                $io->writeError(
-                    sprintf(
-                        "Command output:\n%s\n",
-                        $commandOutput
-                    ),
-                    true,
-                    $io::VERBOSE
-                );
+            if (!$this->allowFailure) {
+                throw $e;
             }
-            if ($commandErrorOutput = trim(strip_tags($e->getErrorMessage()))) {
-                $io->writeError(
-                    sprintf(
-                        "Command error output:\n%s\n",
-                        $commandErrorOutput
-                    ),
-                    true,
-                    $io::VERBOSE
+            if (!$this->allowFailure || $io->getOutput()->isVerbose()) {
+                (new ExceptionRenderer())->render($e, $io->getOutput());
+            } else {
+                $messages[] = sprintf(
+                    '<error>Executing TYPO3 Console command "%s" failed.</error>',
+                    $e->getCommand()
                 );
+                if (self::$verbosityHint) {
+                    $messages[] = sprintf(
+                        '<info>For details re-run Composer command with increased verbosity (-vvv).</info>'
+                    );
+                    self::$verbosityHint = false;
+                }
+                $io->writeError($messages);
             }
         }
 
