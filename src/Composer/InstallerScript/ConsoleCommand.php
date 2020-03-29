@@ -85,11 +85,11 @@ class ConsoleCommand implements InstallerScript
             if (!$this->allowFailure) {
                 throw $e;
             }
-            if (!$this->allowFailure || $io->getOutput()->isVerbose()) {
+            if ($io->getOutput()->isVerbose()) {
                 (new ExceptionRenderer())->render($e, $io->getOutput());
             } else {
                 $messages[] = sprintf(
-                    '<error>Executing TYPO3 Console command "%s" failed.</error>',
+                    '<warning>Executing TYPO3 Console command "%s" failed.</warning>',
                     $e->getCommand()
                 );
                 if (self::$verbosityHint) {
