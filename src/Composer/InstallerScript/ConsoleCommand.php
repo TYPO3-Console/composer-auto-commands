@@ -19,6 +19,7 @@ use Composer\Script\Event;
 use Helhum\Typo3Console\Error\ExceptionRenderer;
 use Helhum\Typo3Console\Mvc\Cli\CommandDispatcher;
 use Helhum\Typo3Console\Mvc\Cli\FailedSubProcessCommandException;
+use TYPO3\ClassAliasLoader\ClassAliasMapGenerator;
 use TYPO3\CMS\Composer\Plugin\Core\InstallerScript;
 use Typo3Console\ComposerAutoCommands\Composer\ConsoleIo;
 
@@ -51,6 +52,8 @@ class ConsoleCommand implements InstallerScript
 
     private static $verbosityHint = true;
 
+    private static $aliasLoaderDeployed =false;
+
     public function __construct(
         string $command,
         array $arguments = [],
@@ -72,6 +75,8 @@ class ConsoleCommand implements InstallerScript
         if (!($this->shouldRun)()) {
             return true;
         }
+        self::ensureSaneEnvironment($event);
+
         $io = new ConsoleIo($event->getIO());
         if ($this->message) {
             $io->writeError(sprintf('<info>%s</info>', $this->message));
@@ -103,5 +108,18 @@ class ConsoleCommand implements InstallerScript
         }
 
         return true;
+    }
+
+    private static function ensureSaneEnvironment(Event $event)
+    {
+        if (self::$aliasLoaderDeployed) {
+            return;
+        }
+        self::$aliasLoaderDeployed = true;
+        if (!class_exists(ClassAliasMapGenerator::class)) {
+            return;
+        }
+        $aliasMapGenerator = new ClassAliasMapGenerator($event->getComposer());
+        $aliasMapGenerator->generateAliasMap();
     }
 }
