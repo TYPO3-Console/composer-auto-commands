@@ -54,7 +54,7 @@ class InstallerScripts implements InstallerScriptsRegistration
                 20
             );
             $scriptDispatcher->addInstallerScript(
-                new ConsoleCommand('extension:setupactive'),
+                new ConsoleCommand('extension:setup'),
                 20
             );
         }
