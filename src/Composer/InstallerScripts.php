@@ -38,18 +38,6 @@ class InstallerScripts implements InstallerScriptsRegistration
         $typo3IsSetUp = getenv('TYPO3_IS_SET_UP') || file_exists(getenv('TYPO3_PATH_ROOT') . '/typo3conf/LocalConfiguration.php');
         if ($typo3IsSetUp && $event->isDevMode()) {
             $scriptDispatcher->addInstallerScript(
-                new ConsoleCommand(
-                    'database:updateschema',
-                    [],
-                    'Setting up TYPO3 environment and extensions.'
-                ),
-                20
-            );
-            $scriptDispatcher->addInstallerScript(
-                new ConsoleCommand('cache:flush'),
-                20
-            );
-            $scriptDispatcher->addInstallerScript(
                 new ConsoleCommand('extension:setup'),
                 20
             );
