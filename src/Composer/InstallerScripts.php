@@ -32,10 +32,6 @@ class InstallerScripts implements InstallerScriptsRegistration
     public static function register(Event $event, ScriptDispatcher $scriptDispatcher)
     {
         $scriptDispatcher->addInstallerScript(
-            new ConsoleCommand('install:generatepackagestates', [], '', null, false),
-            20
-        );
-        $scriptDispatcher->addInstallerScript(
             new ConsoleCommand('install:fixfolderstructure', [], '', null, false),
             20
         );
