@@ -82,7 +82,7 @@ class ConsoleCommand implements InstallerScript
             $io->writeError(sprintf('<info>%s</info>', $this->message));
         }
 
-        $commandDispatcher = CommandDispatcher::createFromComposerRun($event);
+        $commandDispatcher = CommandDispatcher::createFromComposerRun($event, [], ['COMPOSER_VERSION' => $event->getComposer()::getVersion()]);
         try {
             $output = $commandDispatcher->executeCommand($this->command, $this->arguments);
             $io->writeError($output, true, $io::VERBOSE);
