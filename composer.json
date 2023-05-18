@@ -4,9 +4,9 @@
     "description" : "Execute TYPO3 Console commands on 'composer install'",
     "license": "GPL-2.0-or-later",
     "require": {
-        "php": ">=7.4.1",
-        "helhum/typo3-console": "^7.0",
-        "typo3/cms-composer-installers": "^3.0 || ^4.0"
+        "php": ">=7.4.1 || >=8.1",
+        "helhum/typo3-console": "^7.0 || ^8.0",
+        "typo3/cms-composer-installers": "^3.0 || ^4.0 || ^5.0"
     },
     "autoload": {
         "psr-4": {
