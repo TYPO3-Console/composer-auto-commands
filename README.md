@@ -8,9 +8,9 @@ The following TYPO3 Console commands are executed:
 * `install:generatepackagestates` (only TYPO3 Console lower than 7.0)
 * `install:fixfolderstructure`
 
-And in the case TYPO3 appears to be setup properly (`LocalConfiguration.php`
-file is not missing) and running composer in dev mode (without `--no-dev`) these
-commands are also executed:
+And in the case TYPO3 appears to be setup properly (`typo3conf/LocalConfiguration.php` or
+`config/system/settings.php` file is not missing) and running composer in dev mode
+(without `--no-dev`) these commands are also executed:
 
 * `extension:setup` (or `extension:setupactive` in TYPO3 Console versions lower than 7.0)
 
