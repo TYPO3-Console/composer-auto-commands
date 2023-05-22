@@ -35,7 +35,9 @@ class InstallerScripts implements InstallerScriptsRegistration
             new ConsoleCommand('install:fixfolderstructure', [], '', null, false),
             20
         );
-        $typo3IsSetUp = getenv('TYPO3_IS_SET_UP') || file_exists(getenv('TYPO3_PATH_ROOT') . '/typo3conf/LocalConfiguration.php');
+        $typo3IsSetUp = getenv('TYPO3_IS_SET_UP')
+            || file_exists(getenv('TYPO3_PATH_ROOT') . '/typo3conf/LocalConfiguration.php')
+            || file_exists(getenv('TYPO3_PATH_APP') . '/config/system/settings.php');
         if ($typo3IsSetUp && $event->isDevMode()) {
             $scriptDispatcher->addInstallerScript(
                 new ConsoleCommand('extension:setup'),
