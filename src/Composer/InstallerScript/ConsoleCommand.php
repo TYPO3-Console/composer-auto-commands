@@ -58,7 +58,7 @@ class ConsoleCommand implements InstallerScript
         string $command,
         array $arguments = [],
         string $message = '',
-        callable $shouldRun = null,
+        ?callable $shouldRun = null,
         bool $allowFailure = true
     ) {
         $this->command = $command;
