@@ -119,7 +119,7 @@ class ConsoleCommand implements InstallerScript
         if (!class_exists(ClassAliasMapGenerator::class)) {
             return;
         }
-        $aliasMapGenerator = new ClassAliasMapGenerator($event->getComposer());
+        $aliasMapGenerator = new ClassAliasMapGenerator($event->getComposer(), $event->getIO());
         $aliasMapGenerator->generateAliasMap();
     }
 }
