@@ -120,6 +120,6 @@ class ConsoleCommand implements InstallerScript
             return;
         }
         $aliasMapGenerator = new ClassAliasMapGenerator($event->getComposer(), $event->getIO());
-        $aliasMapGenerator->generateAliasMap();
+        $aliasMapGenerator->generateAliasMapFiles();
     }
 }
